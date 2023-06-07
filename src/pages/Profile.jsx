@@ -4,6 +4,8 @@ import React, {useState} from 'react'
 import { useNavigate } from 'react-router';
 import {toast} from 'react-toastify';
 import { db } from '../firebase';
+import {FcHome} from 'react-icons/fc';
+import { Link } from 'react-router-dom';
 
 
 export default function Profile() {
@@ -56,7 +58,7 @@ export default function Profile() {
             {/* Email input */}
             <input type="email" id="email" value={email} disabled className='w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded transition ease-in-out mb-6'/>
 
-            <div className='flex justify-between whitespace-nowarp text-sm sm:text-lg'>
+            <div className='flex justify-between whitespace-nowarp text-sm sm:text-lg mb-6'>
               <p className='flex items-center'>Do you want to change? <span 
               onClick={() => {
                 changeDetail && onSubmit();
@@ -68,6 +70,12 @@ export default function Profile() {
               <p onClick={onLogout} className='text-blue-600 hover:text-blue-800 transition ease-in-out duration-200 cursor-pointer'>Sign out</p>
             </div>
           </form>
+          <button type='submit' className='w-full bg-blue-600 text-white uppercase px-7 py-3 text-sm font-medium rounded shadow-md hover:bg-blue-700 transition ease-in-out duration-200 hover:shadow-lg active:bg-blue-800 '>
+            <Link to="/create-listing" className='flex justify-center items-center'>
+              <FcHome className='mr-2 text-3xl bg-red-200 rounded-full p-1 border-2'/>
+              Sell or Rent your home
+            </Link>
+          </button>
         </div>
       </section>
     
