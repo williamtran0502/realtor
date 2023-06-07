@@ -2,6 +2,11 @@ import React, {useState} from 'react'
 import {AiFillEyeInvisible, AiFillEye} from 'react-icons/ai'
 import { Link } from 'react-router-dom';
 import OAuth from '../components/OAuth';
+import {getAuth, createUserWithEmailAndPassword, updateProfile} from 'firebase/auth';
+import {db} from '../firebase';
+import {doc, serverTimestamp, setDoc} from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
@@ -9,18 +14,43 @@ export default function SignUp() {
     email: "",
     name: "",
     password: "",
-  })
+  });
+
   const {name, email, password} = formData;
+  const navigate = useNavigate();
+
   function onChange(e){
     setFormData((prevState)=>({
       ...prevState, [e.target.id]: e.target.value,
     }))
   }
+
   const handleShowPassword = () => {
     if (showPassword) {
       setShowPassword(false);
     }else{
       setShowPassword(true);
+    }
+  }
+
+  async function onSubmit(e){
+    e.preventDefault()
+
+    try{
+      const auth = getAuth();
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      updateProfile(auth.currentUser, {
+        displayName: name
+      })
+      const user = userCredential.user;
+      const formDataCopy = {...formData};
+      delete formDataCopy.password;
+      formDataCopy.timestamp = serverTimestamp();
+
+      await setDoc(doc(db, "users", user.uid), formDataCopy);
+      navigate("/");
+    }catch(error){
+      toast.error("Something went wrong");
     }
   }
   return (
@@ -32,7 +62,7 @@ export default function SignUp() {
             <img src="https://media.istockphoto.com/id/507400394/vi/anh/ch%C3%ACa-kh%C3%B3a-v%C3%A0ng-v%C3%A0-c%C3%A2u-%C4%91%E1%BB%91.jpg?s=612x612&w=is&k=20&c=sxGYP4Kfr202QZSX0bYcYW6HLEeauRqRNLCLOaIKB3w=" alt="key" className='w-full rounded-2xl'/>
           </div>
           <div className='w-full md:w-[67%] lg:w-[40%] lg:ml-20'>
-            <form >
+            <form onSubmit={onSubmit}>
               <input type="text" className='w-full' id="name" value={name}  onChange={onChange} placeholder="Full name" className=" mb-6 w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out"/>
 
               <input type="email" className='w-full' id="email" value={email} onChange={onChange} placeholder='Email address' className=" mb-6 w-full px-4 py-2 text-xl text-gray-700 bg-white border-gray-300 rounded transition ease-in-out"/>
