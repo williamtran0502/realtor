@@ -9,7 +9,6 @@ export default function Header() {
     const location = useLocation();
     const navigate = useNavigate();
     const auth = getAuth();
-    console.log(auth);
      useEffect(() => {
         onAuthStateChanged(auth, (user)=>{
             if(user){
@@ -19,7 +18,6 @@ export default function Header() {
             }
         })
      })
-    console.log(location);
 
     function pathMatchRoute(route){
         if (route === location.pathname){
