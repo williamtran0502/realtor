@@ -1,20 +1,23 @@
 import { getAuth, updateProfile } from 'firebase/auth';
-import { doc, updateDoc } from 'firebase/firestore';
-import React, {useState} from 'react'
+import { doc, getDocs, query, updateDoc, where, collection, orderBy } from 'firebase/firestore';
+import React, {useState, useEffect} from 'react'
 import { useNavigate } from 'react-router';
 import {toast} from 'react-toastify';
 import { db } from '../firebase';
 import {FcHome} from 'react-icons/fc';
 import { Link } from 'react-router-dom';
+import ListingItem from '../components/ListingItem';
 
 
 export default function Profile() {
   const auth = getAuth();
   const navigate = useNavigate();
   const [changeDetail, setChangeDetail] = useState(false);
+  const [listings, setListings] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
-    name: "Name",
-    email: "email@example.com",
+    name: auth.currentUser.displayName,
+    email: auth.currentUser.email,
   })
   const {name, email} = formData;
   function onLogout(){
@@ -45,6 +48,23 @@ export default function Profile() {
       toast.error("could not update profile details");
     }
   }
+  useEffect(() => {
+    async function fetchUserListings(){
+      const listingRef = collection(db, "listings");
+      const q = query(listingRef, where("userRef", "==", auth.currentUser.uid), orderBy("timestamp", "desc"));
+      const querySnap = await getDocs(q);
+      let listing = [];
+      querySnap.forEach((doc) => {
+        return listing.push(({
+          id: doc.id,
+          data: doc.data(),
+        }));
+      });
+      setListings(listing);
+      setLoading(false);
+    }
+    fetchUserListings();
+  },[auth.currentUser.uid]);
   return (
     <>
       <section className='max-w-6xl mx-auto flex justify-center items-center flex-col'>
@@ -78,7 +98,18 @@ export default function Profile() {
           </button>
         </div>
       </section>
-    
+      <div className='max-w-6xl px-3 mt-6 mx-auto'> 
+        {!loading && listings.length > 0 && (
+          <>
+              <h2 className='text-2xl text-center font-semibold'>My Listings</h2>
+              <ul>
+                {listings.map((listing) =>(
+                  <ListingItem key={listing.id} id={listing.id} listing={listing.data}/>
+                ))}
+              </ul>
+          </>
+        )}
+      </div>
     </>
 
   )
