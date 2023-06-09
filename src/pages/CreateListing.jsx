@@ -285,13 +285,13 @@ export default function CreateListing() {
                         <p className='text-lg font-semibold '>Latitude</p>
                         <input 
                         className='w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded transition ease-in-out duration-150 focus:bg-white focus:text-gray-700 focus:border-slate-600 text-center' 
-                        type="number" id="latitude" value={latitude} onChange={onChange} required min="-90" max="90"/>
+                        type="text" id="latitude" value={latitude} onChange={onChange} required min="-90" max="90"/>
                     </div>
                     <div>
                         <p className='text-lg font-semibold '>Longitude</p>
                         <input 
                         className='w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded transition ease-in-out duration-150 focus:bg-white focus:text-gray-700 focus:border-slate-600 text-center' 
-                        type="number" id="longitude" value={longitude} onChange={onChange} required min="-180" max="180"/>
+                        type="text" id="longitude" value={longitude} onChange={onChange} required min="-180" max="180"/>
                     </div>
                     
                 </div>
