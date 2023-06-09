@@ -3,15 +3,19 @@ import React, {useEffect, useState} from 'react'
 import { useParams } from 'react-router';
 import { db } from '../firebase';
 import Spinner from '../components/Spinner';
+import Contact from '../components/Contact';
 import {Swiper, SwiperSlide} from 'swiper/react'
 import SwiperCore, {EffectFade, Autoplay, Navigation, Pagination} from 'swiper'
 import "swiper/css/bundle"
 import {FaShare, FaMapMarkerAlt, FaBed, FaBath, FaParking, FaChair} from 'react-icons/fa'
+import { getAuth } from 'firebase/auth';
 
 export default function Listing() {
     const params = useParams();
     const [listing, setListing] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [contactLandlord, setContactLandlord] = useState(false);
+    const auth = getAuth();
     const [shareLinkCopied, setShareLinkCopied] = useState(false);
     SwiperCore.use([Autoplay, Navigation, Pagination]);
 
@@ -64,7 +68,7 @@ export default function Listing() {
                 {shareLinkCopied && <p className='fixed top-[9%] right-[3%] font-semibold border-2 border-gray-400 rounded-md bg-white z-10'>Link Copied</p>}
 
                 <div className='m-4 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-4 rounded-lg shadow-lg bg-white lg:space-x-5'>
-                    <div className='w-full h-[200px] lg-[400px]'>
+                    <div className='w-full'>
                         <p className='text-2xl font-bold mb-3 text-blue-900 '>
                             {listing.name} - ${listing.offer 
                             ? listing.discountedPrice 
@@ -115,9 +119,17 @@ export default function Listing() {
                             </li>
                             
                         </ul>
+                        {/* Contact Landlord  */}
+                        {listing.userRef !== auth.currentUser?.uid && !contactLandlord && (
+                            <div>
+                                <button className='px-7 py-3 bg-blue-600 text-white font-medium text-sm uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg w-full text-center transition ease-in-out duration-150 mb-6 mt-6' onClick={() => (setContactLandlord(true))}>Contact Landlord</button>
+                            </div>
+                        )}
+                        {contactLandlord && <Contact userRef={listing.userRef} listing={listing}/>}
+                        
                     </div>
                     <div className='bg-blue-300 w-full h-[200px] lg-[400px] z-10 overflow-x-hidden'>
-
+                            
                     </div>
                 </div>
                 
